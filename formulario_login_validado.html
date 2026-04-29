@@ -1,0 +1,144 @@
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Formulario de inicio de sesión con validación en tiempo real</h2>
+
+<div style="max-width:420px;margin:2rem auto;padding:0 1rem;">
+
+  <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:2rem;">
+
+    <p style="font-size:22px;font-weight:500;margin:0 0 0.25rem;color:var(--color-text-primary);">Iniciar sesión</p>
+    <p style="font-size:14px;color:var(--color-text-secondary);margin:0 0 1.75rem;">Formulario con validación — Sesión 3</p>
+
+    <div style="margin-bottom:1.25rem;">
+      <label style="display:block;font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:6px;" for="email">Correo electrónico</label>
+      <input type="email" id="email" placeholder="example@domain.com" style="width:100%;box-sizing:border-box;" oninput="validateEmail()" />
+      <p id="email-error" style="font-size:12px;color:var(--color-text-danger);margin:4px 0 0;display:none;">Ingresá un correo válido (ejemplo@dominio.com)</p>
+    </div>
+
+    <div style="margin-bottom:1.75rem;">
+      <label style="display:block;font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:6px;" for="password">Contraseña</label>
+      <div style="position:relative;">
+        <input type="password" id="password" placeholder="Tu contraseña" style="width:100%;box-sizing:border-box;padding-right:40px;" oninput="validatePassword()" />
+        <button onclick="togglePassword()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--color-text-secondary);font-size:14px;" title="Mostrar/ocultar contraseña">👁</button>
+      </div>
+      <p id="password-error" style="font-size:12px;color:var(--color-text-danger);margin:4px 0 0;display:none;">La contraseña debe tener al menos 6 caracteres</p>
+
+      <div id="strength-bar" style="display:none;margin-top:8px;">
+        <div style="height:4px;background:var(--color-background-secondary);border-radius:2px;overflow:hidden;">
+          <div id="strength-fill" style="height:100%;width:0%;transition:width 0.3s,background 0.3s;border-radius:2px;"></div>
+        </div>
+        <p id="strength-label" style="font-size:11px;color:var(--color-text-secondary);margin:3px 0 0;"></p>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:10px;">
+      <input type="checkbox" id="terms" style="margin-top:3px;flex-shrink:0;" onchange="validateTerms()" />
+      <label for="terms" style="font-size:13px;color:var(--color-text-secondary);cursor:pointer;">Acepto los términos y condiciones</label>
+    </div>
+    <p id="terms-error" style="font-size:12px;color:var(--color-text-danger);margin:-1rem 0 1rem;display:none;">Debés aceptar los términos para continuar</p>
+
+    <button onclick="handleSubmit()" style="width:100%;font-size:15px;padding:0.6rem 0;">Enviar formulario ↗</button>
+
+    <div id="success-msg" style="display:none;margin-top:1rem;padding:0.75rem 1rem;background:var(--color-background-success);border:0.5px solid var(--color-border-success);border-radius:var(--border-radius-md);">
+      <p style="margin:0;font-size:14px;color:var(--color-text-success);font-weight:500;">✓ Formulario enviado con éxito</p>
+      <p id="success-detail" style="margin:4px 0 0;font-size:13px;color:var(--color-text-success);"></p>
+    </div>
+
+  </div>
+
+  <div style="margin-top:1.5rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem 1.25rem;">
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-secondary);margin:0 0 0.5rem;">Validaciones activas</p>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--color-text-secondary);">
+        <span id="v-email" style="font-size:12px;">○</span> Email con formato válido (requerido)
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--color-text-secondary);">
+        <span id="v-password" style="font-size:12px;">○</span> Contraseña mínimo 6 caracteres (requerida)
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--color-text-secondary);">
+        <span id="v-terms" style="font-size:12px;">○</span> Términos aceptados (requerido)
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function validateEmail() {
+  const email = document.getElementById('email').value;
+  const err = document.getElementById('email-error');
+  const indicator = document.getElementById('v-email');
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const valid = regex.test(email);
+  err.style.display = (!valid && email.length > 0) ? 'block' : 'none';
+  indicator.textContent = valid ? '●' : '○';
+  indicator.style.color = valid ? 'var(--color-text-success)' : '';
+  return valid;
+}
+
+function validatePassword() {
+  const pass = document.getElementById('password').value;
+  const err = document.getElementById('password-error');
+  const bar = document.getElementById('strength-bar');
+  const fill = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
+  const indicator = document.getElementById('v-password');
+  const valid = pass.length >= 6;
+  err.style.display = (!valid && pass.length > 0) ? 'block' : 'none';
+  indicator.textContent = valid ? '●' : '○';
+  indicator.style.color = valid ? 'var(--color-text-success)' : '';
+  if (pass.length > 0) {
+    bar.style.display = 'block';
+    let strength = 0;
+    if (pass.length >= 6) strength++;
+    if (pass.length >= 10) strength++;
+    if (/[A-Z]/.test(pass) && /[0-9]/.test(pass)) strength++;
+    if (/[^A-Za-z0-9]/.test(pass)) strength++;
+    const colors = ['#E24B4A','#EF9F27','#639922','#1D9E75'];
+    const labels = ['Muy débil','Débil','Buena','Muy fuerte'];
+    fill.style.width = ((strength / 4) * 100) + '%';
+    fill.style.background = colors[strength - 1] || '#E24B4A';
+    label.textContent = labels[strength - 1] || '';
+  } else {
+    bar.style.display = 'none';
+  }
+  return valid;
+}
+
+function validateTerms() {
+  const checked = document.getElementById('terms').checked;
+  const err = document.getElementById('terms-error');
+  const indicator = document.getElementById('v-terms');
+  err.style.display = !checked ? 'none' : 'none';
+  indicator.textContent = checked ? '●' : '○';
+  indicator.style.color = checked ? 'var(--color-text-success)' : '';
+  return checked;
+}
+
+function togglePassword() {
+  const input = document.getElementById('password');
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function handleSubmit() {
+  const emailOk = validateEmail();
+  const passOk = validatePassword();
+  const termsOk = validateTerms();
+  const termsErr = document.getElementById('terms-error');
+  const success = document.getElementById('success-msg');
+  const detail = document.getElementById('success-detail');
+
+  if (!document.getElementById('email').value || !document.getElementById('password').value || !document.getElementById('terms').checked) {
+    if (!document.getElementById('terms').checked) termsErr.style.display = 'block';
+    if (!emailOk && document.getElementById('email').value) document.getElementById('email-error').style.display = 'block';
+    if (!passOk && document.getElementById('password').value) document.getElementById('password-error').style.display = 'block';
+    success.style.display = 'none';
+    return;
+  }
+
+  if (emailOk && passOk && termsOk) {
+    success.style.display = 'block';
+    detail.textContent = 'Usuario: ' + document.getElementById('email').value;
+    termsErr.style.display = 'none';
+  }
+}
+</script>
